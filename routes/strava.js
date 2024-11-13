@@ -37,7 +37,6 @@ router.get('/strava', async (req, res, next) => {
     const user = await Strava.createUser(athlete.id, access_token, refresh_token, expires_at);
     
     //console.log('User created/updated:', user);
-    res.json({ success: true, access_token });
 
     res.redirect(`${process.env.REACT_APP_FRONTEND_URL}/view?code=${code}`);
   } catch (error) {
