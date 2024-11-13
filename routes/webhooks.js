@@ -77,12 +77,12 @@ const verifyAccessToken = async (accessToken) => {
 // Function to update activity title with a random emoji
 const updateActivityTitle = async (activityId, user) => {
   await verifyAccessToken(user.access_token);
-
+  const URL = `${STRAVA_API_URL}/activities/${activityId}`;
+  console.log("URL", URL);
   try {
     const emojiResponse = await axios.get(EMOJI_API_URL);
     const randomEmoji = emojiResponse.data.emoji.emoji;
-    const URL = `${STRAVA_API_URL}/activities/${activityId}`;
-    console.log("URL", URL);
+    
 
     await axios.request({
       method: "PUT",
