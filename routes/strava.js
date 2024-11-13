@@ -14,6 +14,10 @@ const STRAVA_TOKEN_URL = 'https://www.strava.com/oauth/token';
 router.get('/strava', async (req, res, next) => {
   const { code } = req.query;
 
+  if (!code) {
+    return res.status(400).send('Missing authorization code');
+  }
+
   try {
     const requestData = {
       client_id: process.env.STRAVA_CLIENT_ID,
@@ -34,6 +38,8 @@ router.get('/strava', async (req, res, next) => {
     
     //console.log('User created/updated:', user);
     res.json({ success: true, access_token });
+
+    res.redirect(`${process.env.REACT_APP_FRONTEND_URL}/view?code=${code}`);
   } catch (error) {
     console.error('Error during token exchange:', error.response ? error.response.data : error.message);
     res.status(500).json({ success: false, message: error.message });
