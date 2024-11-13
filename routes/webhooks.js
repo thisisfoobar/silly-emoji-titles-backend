@@ -95,7 +95,7 @@ const updateActivityTitle = async (activityId, user) => {
 
     console.log(`Updated activity ${activityId} with emoji ${randomEmoji}`);
   } catch (error) {
-    console.error(`Failed to update activity ${activityId}:`, error.response ? error.response.data : error.message);
+    console.error(`Failed to update activity ${activityId}:`, error);
   }
 };
 
