@@ -2,6 +2,7 @@
 
 const db = require("../db");
 
+// Related functions for emojis and retrieving random emojis
 class Emoji {
   static async getRandomEmoji() {
     const result = await db.query(

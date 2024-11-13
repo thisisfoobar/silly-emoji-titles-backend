@@ -5,7 +5,7 @@ const {  NotFoundError } = require("../expressError");
 
 /** Related functions for strava items. */
 class Strava {
-
+  /** Create a user in the database */
   static async createUser(athlete_id, access_token, refresh_token, token_expires_at) {
     const duplicateCheck = await db.query(
           `SELECT athlete_id
@@ -28,7 +28,7 @@ class Strava {
     return user;
 
   }
-
+  /** Update user in the database */
   static async updateUser(athlete_id, access_token, refresh_token, token_expires_at) {
     const result = await db.query(
           `UPDATE Users
@@ -42,7 +42,7 @@ class Strava {
 
     return user;
   }
-
+  /** Get user from the database */
   static async getUser(athlete_id) {
     const userRes = await db.query(
           `SELECT athlete_id, access_token, refresh_token, token_expires_at
