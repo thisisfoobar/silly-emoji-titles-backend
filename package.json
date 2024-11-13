@@ -23,5 +23,9 @@
     "morgan": "^1.10.0",
     "ngrok": "^5.0.0-beta.2",
     "pg": "^8.13.1"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^7.0.0"
   }
 }
