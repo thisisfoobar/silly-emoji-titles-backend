@@ -12,8 +12,8 @@ const PORT = +process.env.PORT || 5000;
 // Use dev database, testing database, or via env var, production database
 function getDatabaseUri() {
   return (process.env.NODE_ENV === "test")
-      ? "strava_emoji_titles_test"
-      : process.env.DATABASE_URL || "strava_emoji_titles";
+      ? "silly_emoji_titles_test"
+      : process.env.DATABASE_URL || "silly_emoji_titles";
 }
 
 // Speed up bcrypt during tests, since the algorithm safety isn't being tested
@@ -21,7 +21,7 @@ function getDatabaseUri() {
 // WJB: Evaluate in 2021 if this should be increased to 13 for non-test use
 const BCRYPT_WORK_FACTOR = process.env.NODE_ENV === "test" ? 1 : 12;
 
-console.log("strava_emoji_titles Config:".green);
+console.log("silly_emoji_titles Config:".green);
 console.log("SECRET_KEY:".yellow, SECRET_KEY);
 console.log("PORT:".yellow, PORT.toString());
 console.log("BCRYPT_WORK_FACTOR".yellow, BCRYPT_WORK_FACTOR);
