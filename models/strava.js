@@ -56,6 +56,19 @@ class Strava {
 
     return user;
   }
+
+  /** Delete user from the database */
+  static async deleteUser(athlete_id) {
+    const result = await db.query(
+          `DELETE
+           FROM Users
+           WHERE athlete_id = $1
+           RETURNING athlete_id`,
+        [athlete_id]);
+    const user = result.rows[0];
+
+    if (!user) throw new NotFoundError(`No such user: ${athlete_id}`);
+  }
 }
 
 module.exports = Strava;

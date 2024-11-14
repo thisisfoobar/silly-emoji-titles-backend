@@ -10,12 +10,15 @@ const router = new express.Router();
 const STRAVA_API_URL = "https://www.strava.com/api/v3";
 
 // Determine the emoji API URL based on the environment
-const EMOJI_API_URL = process.env.NODE_ENV === 'production' ? process.env.PROD_EMOJI_API_URL : process.env.LOCAL_EMOJI_API_URL;
+const EMOJI_API_URL =
+  process.env.NODE_ENV === "production"
+    ? process.env.PROD_EMOJI_API_URL
+    : process.env.LOCAL_EMOJI_API_URL;
 
 // Webhook endpoint for Strava
 router.post("/webhook", async (req, res, next) => {
   console.log("webhook event received!", req.query, req.body);
-  const { aspect_type, object_id, owner_id } = req.body;
+  const { aspect_type, object_id, owner_id, updates } = req.body;
 
   if (aspect_type === "create") {
     //console.log(`New activity created: ${object_id} by user ${owner_id}`);
@@ -27,8 +30,18 @@ router.post("/webhook", async (req, res, next) => {
     }
 
     await updateActivityTitle(object_id, user);
-  } else
-  if (aspect_type === "delete") {
+  } else if (updates.authorized === "false") {
+    const user = await Strava.getUser(owner_id);
+
+    if (!user) {
+      console.error(`User ${owner_id} not found`);
+      return res.sendStatus(404);
+    }
+
+    // Delete user from the database
+    await Strava.deleteUser(owner_id);
+    console.log("User deauthorized the app and is removed from db");
+  } else {
     console.log("webhook event recieved!");
   }
 
@@ -79,20 +92,19 @@ const verifyAccessToken = async (accessToken) => {
 const updateActivityTitle = async (activityId, user) => {
   await verifyAccessToken(user.access_token);
   const URL = `${STRAVA_API_URL}/activities/${activityId}`;
- 
+
   try {
     const emojiResponse = await axios.get(EMOJI_API_URL);
     const randomEmoji = emojiResponse.data.emoji.emoji;
-    
 
     await axios.request({
       method: "PUT",
       url: URL,
       data: { name: `${randomEmoji}` },
       headers: {
-        "Authorization": `Bearer ${user.access_token}`,
+        Authorization: `Bearer ${user.access_token}`,
         "Content-Type": "application/json",
-      }
+      },
     });
 
     console.log(`Updated activity ${activityId} with emoji ${randomEmoji}`);

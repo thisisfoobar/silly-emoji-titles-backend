@@ -32,7 +32,7 @@ describe("POST /webhook", () => {
   it("should acknowledge non-create events", async () => {
     const response = await request(app)
       .post("/webhook")
-      .send({ aspect_type: "update", object_id: 123, owner_id: 1 });
+      .send({ aspect_type: "update", object_id: 123, owner_id: 1, updates: {}});
 
     expect(response.statusCode).toBe(200);
   });

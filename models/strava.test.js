@@ -70,4 +70,21 @@ describe("getUser", () => {
     expect(db.query).toHaveBeenCalledTimes(1);
   });
 });
+
+describe("deleteUser", () => {
+  it("should delete user if user exists", async () => {
+    const mockUser = { athlete_id: 1 };
+    db.query.mockResolvedValueOnce({ rows: [mockUser] });
+
+    await Strava.deleteUser(1);
+    expect(db.query).toHaveBeenCalledTimes(1);
+  });
+
+  it("should throw NotFoundError if user does not exist", async () => {
+    db.query.mockResolvedValueOnce({ rows: [] });
+
+    await expect(Strava.deleteUser(1)).rejects.toThrow(NotFoundError);
+    expect(db.query).toHaveBeenCalledTimes(1);
+  });
+});
 });
