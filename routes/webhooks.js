@@ -14,7 +14,7 @@ const EMOJI_API_URL = process.env.NODE_ENV === 'production' ? process.env.PROD_E
 
 // Webhook endpoint for Strava
 router.post("/webhook", async (req, res, next) => {
-  //console.log("webhook event received!", req.query, req.body);
+  console.log("webhook event received!", req.query, req.body);
   const { aspect_type, object_id, owner_id } = req.body;
 
   if (aspect_type === "create") {
@@ -27,7 +27,8 @@ router.post("/webhook", async (req, res, next) => {
     }
 
     await updateActivityTitle(object_id, user);
-  } else {
+  } else
+  if (aspect_type === "delete") {
     console.log("webhook event recieved!");
   }
 
