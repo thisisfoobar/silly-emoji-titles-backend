@@ -15,7 +15,7 @@ router.get('/strava', async (req, res, next) => {
   const { code } = req.query;
 
   if (!code) {
-    console.error('Missing authorization code', error.response ? error.response.data : error.message);
+    console.error('Missing authorization code');
     res.redirect(`${process.env.REACT_APP_FRONTEND_URL}/view?error=missing_code`);
   }
 
