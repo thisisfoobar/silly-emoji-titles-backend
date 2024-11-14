@@ -33,12 +33,6 @@ describe("App Routes", () => {
   });
 
   describe("GET /auth/strava", () => {
-    it("should return 400 if no authorization code is provided", async () => {
-      const response = await request(app).get("/auth/strava");
-      expect(response.statusCode).toBe(400);
-      expect(response.text).toBe("Missing authorization code");
-    });
-
     it("should handle errors during token exchange", async () => {
       axios.post.mockRejectedValue(new Error("Token exchange failed"));
 

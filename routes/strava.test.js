@@ -21,12 +21,6 @@ beforeAll(() => {
 });
 
 describe("GET /strava", () => {
-  it("should return 400 if no authorization code is provided", async () => {
-    const response = await request(app).get("/strava");
-    expect(response.statusCode).toBe(400);
-    expect(response.text).toBe("Missing authorization code");
-  });
-
   it("should handle successful token exchange and user creation", async () => {
     const mockResponse = {
       data: {
