@@ -115,8 +115,8 @@ const verifyAccessToken = async (accessToken, user) => {
 const refreshAccessToken = async (refreshToken) => {
   try {
     const response = await axios.post('https://www.strava.com/oauth/token', {
-      client_id: 'YOUR_CLIENT_ID',
-      client_secret: 'YOUR_CLIENT_SECRET',
+      client_id: process.env.STRAVA_CLIENT_ID,
+      client_secret: process.env.STRAVA_CLIENT_SECRET,
       grant_type: 'refresh_token',
       refresh_token: refreshToken,
     });
