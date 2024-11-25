@@ -71,7 +71,7 @@ router.get("/webhook", (req, res, next) => {
 });
 
 // Function to verify access token
-const verifyAccessToken = async (accessToken) => {
+const verifyAccessToken = async (accessToken, user) => {
   try {
     const response = await axios.get(`${STRAVA_API_URL}/athlete`, {
       headers: {
@@ -80,17 +80,56 @@ const verifyAccessToken = async (accessToken) => {
     });
     return response.data;
   } catch (error) {
-    console.error(
-      "Error verifying access token:",
-      error.response ? error.response.data : error.message
-    );
-    throw new Error("Invalid access token");
+    console.error('Error verifying access token:', error.response ? error.response.data : error.message);
+
+    if (error.response && error.response.status === 401) {
+      // Token is invalid, refresh the token
+      try {
+        const newAccessToken = await refreshAccessToken(user.refresh_token);
+        user.access_token = newAccessToken;
+        try {
+          await Strava.updateUser(user.athlete_id, user.access_token, user.refresh_token, user.token_expires_at);
+        } catch (error) {
+          console.error('Error updating user:', error.message);
+          throw new Error('Failed to update user');
+        }
+        
+        // Retry verification with the new token
+        const response = await axios.get(`${STRAVA_API_URL}/athlete`, {
+          headers: {
+            Authorization: `Bearer ${newAccessToken}`,
+          },
+        });
+        return response.data;
+      } catch (refreshError) {
+        console.error('Error refreshing access token:', refreshError.message);
+        throw new Error('Invalid access token and failed to refresh');
+      }
+    } else {
+      throw new Error('Invalid access token');
+    }
+  }
+};
+
+// Function to refresh access token
+const refreshAccessToken = async (refreshToken) => {
+  try {
+    const response = await axios.post('https://www.strava.com/oauth/token', {
+      client_id: 'YOUR_CLIENT_ID',
+      client_secret: 'YOUR_CLIENT_SECRET',
+      grant_type: 'refresh_token',
+      refresh_token: refreshToken,
+    });
+    return response.data.access_token;
+  } catch (error) {
+    console.error('Error refreshing access token:', error.response ? error.response.data : error.message);
+    throw new Error('Failed to refresh access token');
   }
 };
 
 // Function to update activity title with a random emoji
 const updateActivityTitle = async (activityId, user) => {
-  await verifyAccessToken(user.access_token);
+  await verifyAccessToken(user.access_token, user);
   const URL = `${STRAVA_API_URL}/activities/${activityId}`;
 
   try {
@@ -98,18 +137,18 @@ const updateActivityTitle = async (activityId, user) => {
     const randomEmoji = emojiResponse.data.emoji.emoji;
 
     await axios.request({
-      method: "PUT",
+      method: 'PUT',
       url: URL,
-      data: { name: `${randomEmoji}` },
       headers: {
         Authorization: `Bearer ${user.access_token}`,
-        "Content-Type": "application/json",
+      },
+      data: {
+        name: `Activity ${randomEmoji}`,
       },
     });
-
-    console.log(`Updated activity ${activityId} with emoji ${randomEmoji}`);
   } catch (error) {
-    console.error(`Failed to update activity ${activityId}:`, error);
+    console.error('Error updating activity title:', error.response ? error.response.data : error.message);
+    throw new Error('Failed to update activity title');
   }
 };
 

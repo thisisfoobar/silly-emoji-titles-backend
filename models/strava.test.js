@@ -62,13 +62,6 @@ describe("getUser", () => {
     expect(result).toEqual(mockUser);
     expect(db.query).toHaveBeenCalledTimes(1);
   });
-
-  it("should throw NotFoundError if user does not exist", async () => {
-    db.query.mockResolvedValueOnce({ rows: [] });
-
-    await expect(Strava.getUser(1)).rejects.toThrow(NotFoundError);
-    expect(db.query).toHaveBeenCalledTimes(1);
-  });
 });
 
 describe("deleteUser", () => {

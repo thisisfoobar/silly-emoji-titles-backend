@@ -52,7 +52,7 @@ class Strava {
 
     const user = userRes.rows[0];
 
-    if (!user) console.error(`No such user: ${athlete_id}`);
+    if (!user) return console.error(`No such user: ${athlete_id}`);
 
     return user;
   }
