@@ -143,7 +143,7 @@ const updateActivityTitle = async (activityId, user) => {
         Authorization: `Bearer ${user.access_token}`,
       },
       data: {
-        name: `Activity ${randomEmoji}`,
+        name: `${randomEmoji}`,
       },
     });
   } catch (error) {
