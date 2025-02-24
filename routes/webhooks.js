@@ -149,7 +149,7 @@ const updateActivityTitle = async (activityId, user) => {
     const emojiResponse = await axios.get(EMOJI_API_URL);
     const randomEmoji = emojiResponse.data.emoji.emoji;
     let newTitle;
-    
+    console.log(user.athlete_id)
     if (user.athlete_id === 59859637) {
       const nicotineFreeDays = calculateDaysFrom(2025, 1, 4);
       newTitle = `${randomEmoji} - ${nicotineFreeDays} Days Nicotine Free!`;
