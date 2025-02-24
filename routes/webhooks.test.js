@@ -3,7 +3,6 @@ const express = require("express");
 const axios = require("axios");
 const Strava = require("../models/strava");
 const webhooksRouter = require("./webhooks");
-
 // FILE: routes/webhooks.test.js
 
 "use strict";

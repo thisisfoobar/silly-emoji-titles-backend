@@ -127,6 +127,19 @@ const refreshAccessToken = async (refreshToken) => {
   }
 };
 
+function calculateDaysFrom(year, month, day) {
+  const specificDate = new Date(year, month, day);
+  const today = new Date();
+
+  // Calculate the difference in time
+  const timeDifference = today - specificDate;
+
+  // Convert time difference from milliseconds to days
+  const daysDifference = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+
+  return daysDifference;
+}
+
 // Function to update activity title with a random emoji
 const updateActivityTitle = async (activityId, user) => {
   await verifyAccessToken(user.access_token, user);
@@ -135,6 +148,15 @@ const updateActivityTitle = async (activityId, user) => {
   try {
     const emojiResponse = await axios.get(EMOJI_API_URL);
     const randomEmoji = emojiResponse.data.emoji.emoji;
+    let newTitle;
+    
+    if (user.athlete_id === 59859637) {
+      const nicotineFreeDays = calculateDaysFrom(2025, 1, 4);
+      newTitle = `${randomEmoji} - ${nicotineFreeDays} Days Nicotine Free!`;
+    } else{
+      newTitle = `${randomEmoji}`;
+    }
+      
 
     await axios.request({
       method: 'PUT',
@@ -143,7 +165,7 @@ const updateActivityTitle = async (activityId, user) => {
         Authorization: `Bearer ${user.access_token}`,
       },
       data: {
-        name: `${randomEmoji}`,
+        name: `${newTitle}`,
       },
     });
   } catch (error) {
