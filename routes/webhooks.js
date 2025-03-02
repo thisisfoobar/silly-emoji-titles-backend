@@ -15,6 +15,8 @@ const EMOJI_API_URL =
     ? process.env.PROD_EMOJI_API_URL
     : process.env.LOCAL_EMOJI_API_URL;
 
+const goatID = String(process.env.GOAT_ID); 
+
 // Webhook endpoint for Strava
 router.post("/webhook", async (req, res, next) => {
   console.log("webhook event received!", req.query, req.body);
@@ -42,7 +44,7 @@ router.post("/webhook", async (req, res, next) => {
     await Strava.deleteUser(owner_id);
     console.log("User deauthorized the app and is removed from db");
   } else {
-    console.log("webhook event recieved!");
+    console.log("webhook event recieved, but not a new activity");
   }
 
   res.sendStatus(200); // Acknowledge receipt of the webhook
@@ -127,17 +129,19 @@ const refreshAccessToken = async (refreshToken) => {
   }
 };
 
-function calculateDaysFrom(year, month, day) {
-  const specificDate = new Date(year, month, day);
-  const today = new Date();
+function daysFromDate(day = 4, month = 2, year = 2025) {
+  // Define the specific date (default: Feb 4, 2025)
+  const specificDate = new Date(year, month - 1, day); // Month is 0-based in JS
 
-  // Calculate the difference in time
-  const timeDifference = today - specificDate;
+  // Get the current date in EST (stripping time)
+  const now = new Date();
+  const currentDate = new Date(now.getFullYear(), now.getMonth(), now.getDate()); // Strips time
 
-  // Convert time difference from milliseconds to days
-  const daysDifference = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+  // Calculate the difference in days
+  const timeDifference = currentDate - specificDate;
+  const dayDifference = timeDifference / (1000 * 60 * 60 * 24);
 
-  return daysDifference;
+  return Math.round(dayDifference);
 }
 
 // Function to update activity title with a random emoji
@@ -150,8 +154,8 @@ const updateActivityTitle = async (activityId, user) => {
     const randomEmoji = emojiResponse.data.emoji.emoji;
     let newTitle;
 
-    if (user.athlete_id === '59859637') {
-      const nicotineFreeDays = calculateDaysFrom(2025, 1, 4);
+    if (user.athlete_id === goatID) {
+      const nicotineFreeDays = daysFromDate();
       newTitle = `${randomEmoji} - ${nicotineFreeDays} Days Nicotine Free!`;
     } else{
       newTitle = `${randomEmoji}`;
